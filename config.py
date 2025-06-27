@@ -7,11 +7,11 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(os.environ.get('SQLITE_DB_PATH'), 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
-    MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
+    MAIL_PORT = int(os.environ.get('MAIL_PORT') or 587)
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    ADMINS = ['gyftakiskon@iit.demokritos.gr']
+    ADMINS = ['giwrgospalaskas1995@gmail.com']
     BROKER_URL = 'mongodb://{host}:{port}/celery'.format(host=os.environ.get('MONGODB_HOST'),
                                                          port=os.environ.get('MONGODB_PORT'))
     CELERY_RESULT_BACKEND = 'mongodb://{host}:{port}/celery'.format(host=os.environ.get('MONGODB_HOST'),

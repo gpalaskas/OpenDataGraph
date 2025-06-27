@@ -11,8 +11,7 @@ class NeoManager(object):
 
     def _connect(self):
         if not self.__graph:
-            self.__graph = py2neo.Graph(sceme='http', host=self.__host, http_port=int(self.__port),
-                                        user=self.__user, password=self.__password)
+            self.__graph = py2neo.Graph(f"bolt://{self.__host}:{self.__port}", auth=(self.__user, self.__password))
 
     def _run_query(self, query: str):
         self._connect()

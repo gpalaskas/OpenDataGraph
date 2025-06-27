@@ -19,15 +19,19 @@ services:
     volumes:
       - /tmp:${UPLOAD_FOLDER}
       - sqlite-volume:${SQLITE_DB_PATH}
+    networks:
+      - custom_bridge
   mongodb:
     container_name: odg_mongo
-    image: mongo:latest
+    image: mongo:4.4
     restart: unless-stopped
     volumes:
       - data-volume:/data/db
+    networks:
+      - custom_bridge
   neo4j:
     container_name: odg_neo4j
-    image: neo4j:4.1
+    image: neo4j:5.26
     restart: unless-stopped
     ports:
       - 7474:7474
@@ -37,14 +41,18 @@ services:
       - ${HOME}/neo4j/logs:/logs
       - ${HOME}/neo4j/import:/import
       - ${HOME}/neo4j/plugins:/plugins
+     # - ${HOME}/neo4j/neo4j.conf:/var/lib/neo4j/conf/neo4j.conf#
     environment:
       # Raise memory limits
       - NEO4J_AUTH=${NEO4J_USER}/${NEO4J_PASS}
-      - NEO4JLABS_PLUGINS=["apoc", "graph-data-science"]
+      - NEO4JLABS_PLUGINS=["apoc"]
+      - NEO4J_dbms_security_procedures_unrestricted=gds.*,apoc.*
       - NEO4J_dbms_memory_pagecache_size=1G
       - NEO4J_dbms_memory_heap_initial__size=1G
       - NEO4J_dbms_memory_heap_max__size=1G
       - NEO4J_dbms_allow__upgrade=false
+    networks:
+      - custom_bridge
   celery-job-worker:
     container_name: odg_job_worker
     build:
@@ -60,6 +68,8 @@ services:
       - /tmp:${UPLOAD_FOLDER}
       - ${SEMREP_DIR}:${SEMREP_DIR}
       - ${METAMAP_DIR}:${METAMAP_DIR}
+    networks:
+      - custom_bridge
   celery-mail-worker:
     container_name: odg_mail_worker
     build:
@@ -71,6 +81,14 @@ services:
       - .env
     environment:
       - CONTAINER_TYPE=celery_mail_worker
+    networks:
+      - custom_bridge
 volumes:
     data-volume:
     sqlite-volume:
+networks:
+  custom_bridge:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.1.0/24
