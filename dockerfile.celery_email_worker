@@ -16,7 +16,7 @@ WORKDIR /home/openDataGraph/app
 
 COPY requirements.txt requirements.txt
 RUN python3 -m venv venv \
-    && venv/bin/pip install --upgrade pip setuptools \
+    && venv/bin/pip install --upgrade pip==23.1.2 setuptools \
     && venv/bin/pip install -r requirements.txt
 
 COPY --chown=openDataGraph:openDataGraph . ./

@@ -9,6 +9,10 @@ fi
 if [ "$CONTAINER_TYPE" = "celery_job_worker" ]
 then
     echo "Booting celery jobs worker..."
+
+    # try to: Fix permissions on SemRep .so libraries at runtime
+    chmod -R a+rx /home/gspalaskas/public_semrep/bin
+
     celery worker -A celery_worker.celery --loglevel=INFO --pool threads --concurrency=1 -Q jobsQueue
 fi
 if [ "$CONTAINER_TYPE" = "celery_mail_worker" ]

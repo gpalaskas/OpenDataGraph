@@ -5,6 +5,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
   && apt-get install -y \
   libyajl-dev \
+  libpcre3 \
+  libpcre3-dev \
   python3-pip \
   python3-dev \
   python3-venv
@@ -18,10 +20,13 @@ WORKDIR /home/openDataGraph/app
 
 COPY requirements.txt requirements.txt
 RUN python3 -m venv venv \
-    && venv/bin/pip install --upgrade pip setuptools \
+    && venv/bin/pip install --upgrade pip==23.1.2 setuptools \
     && venv/bin/pip install -r requirements.txt
 
 COPY --chown=openDataGraph:openDataGraph . ./
+
+# trial line to fix libpcre error
+RUN ln -s /lib/x86_64-linux-gnu/libpcre.so.3 /lib/x86_64-linux-gnu/libpcre.so.1 || true
 
 RUN chown openDataGraph:openDataGraph . && chmod +x boot.sh
 
