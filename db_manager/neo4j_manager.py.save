@@ -79,25 +79,18 @@ class NeoManager(object):
         self._run_query(query)
 
     def calculate_pagerank(self, graph_name: str, max_iterations: int, damping_factor: float):
-        query = (
-            f"CALL gds.pageRank.write('{graph_name}', "
-            f"{{ maxIterations: {max_iterations}, "
-            f"dampingFactor: {damping_factor}, "
-            f"writeProperty: 'pagerank' }}) "
-            f"YIELD nodePropertiesWritten, ranIterations, didConverge, computeMillis, writeMillis"
-        ) # Updated query for Neo4j 5.26 and GDS 2.13
+        query = f"CALL gds.pageRank.write('{graph_name}', " \
+                f"{{ maxIterations: {max_iterations}, " \
+                f"dampingFactor: {damping_factor}, " \
+                f"writeProperty: 'pagerank'}}) " \
+                f"YIELD nodePropertiesWritten, ranIterations, didConverge, computeMillis, writeMillis"
+
         self._run_query(query)
 
     def calculate_node2vec(self, graph_name: str, embedding_size: int = 128):
-        #query = f"CALL gds.alpha.node2vec.write('{graph_name}', {{embeddingSize: {embedding_size}, " \
-                #f"writeProperty: 'node2vec{embedding_size}'}})"
-        query = (
-            f"CALL gds.node2vec.write('{graph_name}', "
-            f"{{embeddingDimension: {embedding_size}, "
-            f"writeProperty: 'node2vec{embedding_size}'}}) "
-            f"YIELD nodePropertiesWritten, computeMillis, writeMillis"
-        )
-        self._run_query(query) # Updated query for Neo4j 5.26 and GDS 2.13
+        query = f"CALL gds.alpha.node2vec.write('{graph_name}', {{embeddingSize: {embedding_size}, " \
+                f"writeProperty: 'node2vec{embedding_size}'}})"
+        self._run_query(query)
 
     def get_entities_matching_label(self, search_string: str, limit: int, order_by: str = 'ranking'):
         query = f"MATCH (n:Entity) WHERE n.label =~ '(?i){search_string}' " \
@@ -210,13 +203,13 @@ class NeoManager(object):
         query = "MATCH (n:Entity)--(:Entity) WHERE n.pagerank IS NOT NULL " \
                 "RETURN COUNT(DISTINCT n) AS nodes_with_pagerank"
         result = self._run_query(query)
-        return next(result)["nodes_with_pagerank"] # Updated query for Neo4j 5.26 and GDS 2.13
+        return next(result)["nodes_with_pagerank"]
 
     def get_count_of_entities_with_node2vec32(self):
         query = "MATCH (n:Entity)--(:Entity) WHERE n.node2vec32 IS NOT NULL " \
                 "RETURN COUNT(DISTINCT n) AS nodes_with_node2vec32"
         result = self._run_query(query)
-        return next(result)["nodes_with_node2vec32"] # Updated query for Neo4j 5.26 and GDS 2.13
+        return next(result)["nodes_with_node2vec32"]
 
     def get_node_features(self, limit, skip):
         query = f"MATCH (n:Entity)--(:Entity) " \
@@ -244,11 +237,11 @@ class NeoManager(object):
                 "RETURN n.id AS identifier"
         result = self._run_query(query)
 
-        return [record["identifier"] for record in result] # Updated query for Neo4j 5.26 and GDS 2.13
+        return [record["identifier"] for record in result]
 
     def remove_entities_ranking(self):
         query = "MATCH (n:Entity) WHERE n.ranking IS NOT NULL REMOVE n.ranking"
-        self._run_query(query) # Updated query for Neo4j 5.26 and GDS 2.13
+        self._run_query(query)
 
     def get_graph_info(self):
         query = "MATCH (n) RETURN labels(n) AS labels, COUNT(n) AS count"
